@@ -154,7 +154,7 @@ public class ChatWindow extends JFrame{
             jpeast[i].setVisible(clientConnection.isAuthrozied());
         }
     }
-    public void showUsersList(String[] users){
+    public void showUsersList(String[] users){ //метод для обновления юзерлист
         usersList.setText("");
         for(int i = 1; i < users.length; i++){
             usersList.append(users[i] + "\n");

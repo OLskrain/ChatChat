@@ -22,35 +22,35 @@ public class ClientConnection implements ServerConst, Server_API { //отвеч�
     }
     public ClientConnection(){
     }
-    public void init(ChatWindow view){ //lazy init
+    public void init(ChatWindow view){ //lazy init. передается графический клиент
         try{
-            this.socket = new Socket(SERVER_URL, PORT);
+            this.socket = new Socket(SERVER_URL, PORT); //сокет, который открывается на определенный сервер
             this.out = new DataOutputStream(socket.getOutputStream());
             this.in = new DataInputStream(socket.getInputStream());
             new Thread(()-> {
                 try{
-                    while(true){
+                    while(true){ //зеркальный цикл авторизаци
                         String message = in.readUTF();
-                        if(message.startsWith(AUTH_SUCCESSFUl)){
+                        if(message.startsWith(AUTH_SUCCESSFUl)){ //автаризация завершится, если от сервера придет данное сообщение
                             setAuthrozied(true);
                             view.switchWindows(); //вызываем метод выдимости панелек
                             break;
                         }
                         view.showMessage(message);
                     }
-                    while(true){
+                    while(true){ //цикл обмена соощений
                         String message = in.readUTF();
                         String[] elements = message.split(" ");
                         if(message.startsWith(SYSTEM_SYMBOL)){
-                            if(elements[0].equals(CLOSE_CONNECTION)){
-                                setAuthrozied(false);
+                            if(elements[0].equals(CLOSE_CONNECTION)){ //если ввели систем. сообщение на закрытие то
+                                setAuthrozied(false); //закрываем соединение
                                 view.showMessage(message.substring(CLOSE_CONNECTION.length() + 1));
-                                view.switchWindows();
-                            }else if(message.startsWith(USERS_LIST)){
-                                String[] users = message.split(" ");
+                                view.switchWindows();//отправляем клиента на окно автаризации
+                            }else if(message.startsWith(USERS_LIST)){ //если сообщение начинается с юзерлист
+                                String[] users = message.split(" "); //разделяем
                                 Arrays.sort(users);
                                 System.out.println(Arrays.toString(users));
-                                view.showUsersList(users);
+                                view.showUsersList(users); //вызываем мотод из окна чата для добавление клиентов
                             }
 
                         }else{
@@ -76,7 +76,7 @@ public class ClientConnection implements ServerConst, Server_API { //отвеч�
     }
     public void auth(String login, String password){
         try{
-            out.writeUTF(AUTH + " " + login + " " + password);
+            out.writeUTF(AUTH + " " + login + " " + password); //введенные логин и пароль отправляем на сервер для автаризации
         }catch(IOException e){
             e.printStackTrace();
         }

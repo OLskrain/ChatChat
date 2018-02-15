@@ -3,7 +3,7 @@ package ru.geekbrains.server;
 import java.util.ArrayList;
 
 public class BaseAuthService implements AuthService{
-    private class Entry{ //фейковый вложенный класс(для замены базы данных)
+    private class Entry{             //фейковый вложенный класс(для замены базы данных).заглушка для сервиса автаризации
         private String login;
         private String pass;
         private String nick;
@@ -20,12 +20,13 @@ public class BaseAuthService implements AuthService{
         entries.add(new Entry("login2", "pass2", "Morty"));
         entries.add(new Entry("login3", "pass3", "Bet"));
     }
+    //все что выще здесь быть не должно..это отдельный файлик из БазДан.
     @Override
-    public void start(){ //переопределяем метод из интерфйса
+    public void start(){ //переопределяем метод из интерфйса(заглушка)
         //открыть коннекты - инициализация
     }
     @Override
-    public void stop(){
+    public void stop(){//(заглушка)
         //закрыть коннекты
     }
     @Override

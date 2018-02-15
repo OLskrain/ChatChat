@@ -18,17 +18,17 @@ public class Server implements ServerConst, Server_API{
         return authService;
     }
     public Server(){       //конструктор сервера
-        ServerSocket serverSocket = null;
+        ServerSocket serverSocket = null; //сам сервер это серверный сокет.который ждет соединений.принимает на себя соодинение клиенские.
         Socket socket = null;
-        clients = new Vector<>(); //вектор нужно заменять на коллекцию из java.util.concurrent или Collections.synchronized
+        clients = new Vector<>(); //вектор нужно заменять на коллекцию из java.util.concurrent или Collections.synchronized. массив клиентов
         try{
-            serverSocket = new ServerSocket(PORT); //инициализируем сервер сокет
-            authService = new BaseAuthService();
-            authService.start(); //placeholder(заполнитель)
+            serverSocket = new ServerSocket(PORT); //стартуем серверный сокет на определенный порт
+            authService = new BaseAuthService();   //placeholder(заглушка для сервиса автаризации)
+            authService.start();                  //placeholder(заглушка для сервиса автаризации)
             System.out.println("Сервер запущен, ждем клиентов");
             while(true){
-                socket = serverSocket.accept(); //ждем подключений, сервер становится на паузу
-                clients.add(new ClientHandler(this, socket)); //добавляем клиента
+                socket = serverSocket.accept();       //ждем подключений клиентов по сокету, сервер становится на паузу
+                clients.add(new ClientHandler(this, socket)); //добавляем клиента, и открываем канал связи
                 System.out.println("Клиент подключился");
             }
         }catch(IOException e){
@@ -47,20 +47,20 @@ public class Server implements ServerConst, Server_API{
             client.sendMessage(message);
         }
     }
-    public void broadcastUsersList(){
-        StringBuffer sb = new StringBuffer(USERS_LIST);
-        for(ClientHandler client : clients){
+    public void broadcastUsersList(){ //метод для
+        StringBuffer sb = new StringBuffer(USERS_LIST); //StringBuffer, потому что он потокобезопасен
+        for(ClientHandler client : clients){ //спрашиваем кто у нас сейчас в массиве
             sb.append(" " + client.getNick());
         }
-        broadcast(sb.toString());
+        broadcast(sb.toString()); //рассылаем всем
     }
-    public void sendPrivateMessage(ClientHandler from, String to, String msg){
-        boolean nickFound = false;
+    public void sendPrivateMessage(ClientHandler from, String to, String msg){ //реализация приватного сообщения
+        boolean nickFound = false; //чтобы не идти до конца массива
         for(ClientHandler client : clients){
             if(client.getNick().equals(to)){
                 nickFound = true;
-                client.sendMessage("from: " + from.getNick() + ": " + msg);
-                from.sendMessage("to: " + to + " msg: " + msg);
+                client.sendMessage("from: " + from.getNick() + ": " + msg); //от кого сообщение
+                from.sendMessage("to: " + to + " msg: " + msg); //копия себе
                 break;
             }
         }
@@ -70,9 +70,9 @@ public class Server implements ServerConst, Server_API{
         clients.remove(c);
         broadcastUsersList();
     }
-    public boolean isNickBusy(String nick){
+    public boolean isNickBusy(String nick){ //метод для того, чтобы нельзя было залогиниться под одним и тем же ником
         for(ClientHandler client : clients){
-            if(client.getNick().equals(nick)) return true;
+            if(client.getNick().equals(nick)) return true; //ник занят
         }
         return false;
     }
