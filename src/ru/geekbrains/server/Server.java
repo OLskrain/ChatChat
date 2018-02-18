@@ -12,7 +12,9 @@ public class Server implements ServerConst, Server_API{
     private Vector<ClientHandler> clients;//тип списка "вектор"(устаревший),который со но вообще не стоит его использовать
     // потому что все его методы сынхонайз, что замедляет приложение. Когда один поток делает что то с членом "вектора".
     // ни один другой поток работаеть не будет в это время. Но зато будет полная потокобезопасность.
-
+//    private long timer_s = 0;
+//    private long timer_f = 0;
+//    private long timer_d = 4000;
     private AuthService authService;
     public AuthService getAuthService(){ //конструктор для автаризации
         return authService;
@@ -30,6 +32,7 @@ public class Server implements ServerConst, Server_API{
                 socket = serverSocket.accept();       //ждем подключений клиентов по сокету, сервер становится на паузу
                 clients.add(new ClientHandler(this, socket)); //добавляем клиента, и открываем канал связи
                 System.out.println("Клиент подключился");
+                //timeWaiting();
             }
         }catch(IOException e){
             System.out.println("Ошибка инициализации");
@@ -76,5 +79,15 @@ public class Server implements ServerConst, Server_API{
         }
         return false;
     }
+//    public boolean timeWaiting(){
+//        if(timer_s == 0){
+//            timer_s = System.currentTimeMillis();
+//            timer_f = timer_s + timer_d;
+//        }
+//        if(timer_f <= System.currentTimeMillis()){
+//            return true;
+//        }
+//        else return false;
+//    }
 
 }

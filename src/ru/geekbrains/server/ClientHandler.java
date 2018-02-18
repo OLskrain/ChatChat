@@ -26,21 +26,22 @@ public class ClientHandler implements Server_API { //отвечает за по�
         new Thread(()-> { //поток с лямда выражением "()->". в отличие от ананимного класса контекст не меняется. ЦИКЛ АВТВРИЗАЦИИ
             try{
                 //Auth
-                while(true){                          //цикл для авторизации
+                while(true) {                          //цикл для авторизации
                     String message = in.readUTF();    //принимаем входяшую инфу
-                    if(message.startsWith(AUTH)){    //проверяем что сообщение начинается с AUTH
+                    if (message.startsWith(AUTH)) {    //проверяем что сообщение начинается с AUTH
                         String[] elements = message.split(" "); //разделяем 1 строку с данными от пользователя на элементы по пробелу
                         String nick = server.getAuthService().getNickByLoginPass(elements[1], elements[2]); //передаем логин и пароль на сервер на проверку.
-                        if(nick != null){                              //если есть такой ник
-                            if(!server.isNickBusy(nick)){  //если ник не занят
+                        if (nick != null) {                              //если есть такой ник
+                            if (!server.isNickBusy(nick)) {  //если ник не занят
                                 sendMessage(AUTH_SUCCESSFUl + " " + nick); //сообщение "авторизация успешна"
                                 this.nick = nick;
                                 server.broadcastUsersList(); //человек автаризовл. и говорим всем это
                                 server.broadcast(this.nick + " has entered the chat room");
                                 break;
-                            }else sendMessage("This account is already in use!"); //если нк занят
-                        }else sendMessage("Wrong login/password!");
-                    }else sendMessage("You should authorize first!");
+                            } else sendMessage("This account is already in use!"); //если нк занят
+                        } else sendMessage("Wrong login/password!");
+                    } else sendMessage("You should authorize first!");
+
                 }
                 while(true){ //ЦИКЛ ОБМЕНА СООБЩЕНИЯМИ
                     String message = in.readUTF();

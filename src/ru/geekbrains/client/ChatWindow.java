@@ -16,6 +16,7 @@ public class ChatWindow extends JFrame{
     private JScrollPane scrollPane1;
     private JScrollPane scrollPane2;
     private JScrollPane scrollPane3;
+    private JButton send;
     private JPanel jPanel;
     private JPanel[] jpeast;
     private JTextField login;
@@ -26,7 +27,6 @@ public class ChatWindow extends JFrame{
 
     public ChatWindow() {
         clientConnection = new ClientConnection();
-        clientConnection.init(this);
 
         setTitle("BriZzChat");
         setSize(WIDTH, HEINGHT);
@@ -59,19 +59,21 @@ public class ChatWindow extends JFrame{
             }
         });
 
-        jpeast = new JPanel[3];
+        jpeast = new JPanel[4];
         for (int i = 0; i < jpeast.length ; i++) {
             jpeast[i] = new JPanel();
             jpeast[i].setLayout(new FlowLayout());
         }
 
-        jpeast[0].setPreferredSize(new Dimension(200,400));
-        jpeast[1].setPreferredSize(new Dimension(400,400));
+        jpeast[1].setPreferredSize(new Dimension(200,400));
+        jpeast[0].setPreferredSize(new Dimension(400,400));
         jpeast[2].setPreferredSize(new Dimension(100,50));
+        jpeast[3].setPreferredSize(new Dimension(150,400));
 
-        jpeast[0].setBackground(new Color(34+2*40,34+2*40,34+2*40));
         jpeast[1].setBackground(new Color(34+2*40,34+2*40,34+2*40));
+        jpeast[0].setBackground(new Color(34+2*40,34+2*40,34+2*40));
         jpeast[2].setBackground(new Color(100+3*40,100+3*40,99+40));
+        jpeast[3].setBackground(new Color(100+3*40,100+3*40,99+40));
 
         usersList = new JTextArea();
         usersList.setEnabled(false);
@@ -88,14 +90,14 @@ public class ChatWindow extends JFrame{
         scrollPane3 = new JScrollPane(message);
         scrollPane3.setPreferredSize(new Dimension(900, 40));
 
-        JButton send = new JButton("Send");
+        send = new JButton("Send");
 
         //панель авторизаци
         jPanel = new JPanel();
         login = new JTextField();
         password = new JPasswordField();
         JButton auth = new JButton("Login");
-        top = new JPanel(new GridLayout(1,3)); //расставляем по сетке
+        top = new JPanel(new GridLayout(3,1)); //расставляем по сетке
         top.setBackground(new Color(100+3*40,100+3*40,99+40));
         top.add(login);
         top.add(password);
@@ -116,29 +118,30 @@ public class ChatWindow extends JFrame{
         auth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
+                startConnect();
                 auth();
             }
         });
-
-        jpeast[0].add(scrollPane1);
-        jpeast[1].add(scrollPane2);
+        jpeast[1].add(scrollPane1);
+        jpeast[0].add(scrollPane2);
         jpeast[2].add(scrollPane3);
         jpeast[2].add(send);
+        jpeast[3].add(top);
 
-        add(jpeast[0], BorderLayout.EAST);
-        add(jpeast[1], BorderLayout.CENTER);
+        add(jpeast[1], BorderLayout.EAST);
+        add(jpeast[0], BorderLayout.CENTER);
         add(jpeast[2], BorderLayout.SOUTH);
-        add(top, BorderLayout.NORTH);
+        add(jpeast[3], BorderLayout.WEST);
 
         switchWindows(); //вызываем , чтобы правильно определить что показывать
         setVisible(true);
     }
-    public void sendMessage(){
+    private void sendMessage(){
         String message = this.message.getText(); //здесь message локальная
         this.message.setText("");
         clientConnection.sendMessage(message);
     }
-    public void auth(){
+    private void auth(){
         clientConnection.auth(login.getText(), new String(password.getPassword()));
         login.setText("");
         password.setText("");
@@ -148,16 +151,24 @@ public class ChatWindow extends JFrame{
         chatHistory.setCaretPosition(chatHistory.getDocument().getLength());
     }
     public void switchWindows(){ //метод для видимости панелек
-         // панель автаризац видна, если клиент не автаризован
-        top.setVisible(!clientConnection.isAuthrozied());
-        for (int i = 0; i < jpeast.length ; i++) {    //если клиент авторизован
-            jpeast[i].setVisible(clientConnection.isAuthrozied());
+        if(!clientConnection.isAuthrozied()){
+            scrollPane2.setPreferredSize(new Dimension(850, 695));
+        }else{
+            scrollPane2.setPreferredSize(new Dimension(800, 645));
         }
+        top.setVisible(!clientConnection.isAuthrozied());// панель автаризац видна, если клиент не автаризован
+        jpeast[1].setVisible(clientConnection.isAuthrozied());
+        jpeast[2].setVisible(clientConnection.isAuthrozied());
+        jpeast[3].setVisible(!clientConnection.isAuthrozied());
+
     }
     public void showUsersList(String[] users){ //метод для обновления юзерлист
         usersList.setText("");
         for(int i = 1; i < users.length; i++){
             usersList.append(users[i] + "\n");
         }
+    }
+    private void startConnect(){
+        clientConnection.init(this);
     }
 }
