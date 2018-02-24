@@ -142,6 +142,9 @@ public class ChatWindow extends JFrame{
         clientConnection.sendMessage(message);
     }
     private void auth(){
+        if(clientConnection.socket == null || clientConnection.socket.isClosed()){ //подключаемся к клиенту только по нажатию  кнопки.
+            startConnect();
+        }
         clientConnection.auth(login.getText(), new String(password.getPassword()));
         login.setText("");
         password.setText("");
